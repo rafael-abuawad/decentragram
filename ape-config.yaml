@@ -1,0 +1,18 @@
+name: decentragram
+
+plugins:
+  - name: solidity
+    version: 0.7.1
+
+dependencies:
+  - name: Solmate
+    local: dependencies/solmate
+    contracts_folder: src
+  - name: OpenZeppelin
+    github: OpenZeppelin/openzeppelin-contracts
+    version: 5.0.1
+
+solidity:
+  import_remapping:
+    - "@solmate=Solmate"
+    - "@openzeppelin/contracts=OpenZeppelin/5.0.1"

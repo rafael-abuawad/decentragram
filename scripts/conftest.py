@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture(scope="module")
 def sender(accounts):
     return accounts[0]
@@ -11,5 +12,5 @@ def user(accounts):
 
 
 @pytest.fixture(scope="module")
-def post(sender, project):
-    return project.InstagramPost.deploy(sender=sender)
+def decentragram_post(sender, project):
+    return project.DecentragramPost.deploy(sender=sender)

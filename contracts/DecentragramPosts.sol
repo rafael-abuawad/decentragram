@@ -6,7 +6,7 @@ import {Owned} from "@solmate/auth/Owned.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
-contract InstagramPost is ERC721, Owned {
+contract DecentragramPost is ERC721, Owned {
     error InstagramPost__HasAlreadyLikedPost();
     error InstagramPost__HasNotLikedPost();
 
@@ -18,11 +18,11 @@ contract InstagramPost is ERC721, Owned {
 
     constructor() ERC721("Decentagram Posts", "DPOSTS") Owned(msg.sender) {}
 
-    function post(string memory descr, string memory img) external onlyOwner returns (bool) {
+    function post(string memory description, string memory imageURI) external onlyOwner returns (bool) {
         uint256 id = _ids;
         _mint(msg.sender, id);
-        _images[id] = img;
-        _descriptions[id] = descr;
+        _images[id] = imageURI;
+        _descriptions[id] = description;
         _ids += 1;
         return true;
     }
@@ -51,18 +51,6 @@ contract InstagramPost is ERC721, Owned {
 
     function likes(uint256 id) external view returns (uint256) {
         return _likes[id];
-    }
-
-    function description(uint256 id) external view returns (string memory) {
-        return _descriptions[id];
-    }
-
-    function image(uint256 id) external view returns (string memory) {
-        return _images[id];
-    }
-
-    function totalSupply() external view returns (uint256) {
-        return _ids;
     }
 
     function _tokenURI(uint256 id) internal view returns (string memory) {

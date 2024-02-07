@@ -12,5 +12,5 @@ def user(accounts):
 
 
 @pytest.fixture(scope="module")
-def decentragram_post(sender, project):
-    return project.DecentragramPost.deploy(sender=sender)
+def decentragram_posts(sender, project):
+    return project.DecentragramPosts.deploy(sender=sender)

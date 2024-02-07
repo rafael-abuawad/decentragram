@@ -10,16 +10,16 @@ def decode_json(data_string):
     return decoded_dict
 
 
-def test_make_a_post(sender, decentragram_post):
+def test_make_a_post(sender, decentragram_posts):
     # data
     image = "https://ipfs.io/ipfs/QmNf1UsmdGaMbpatQ6toXSkzDpizaGmC9zfunCyoz1enD5/penguin/99.png"
     description = "Pudgey penguin #99"
 
     # making a post
-    decentragram_post.post(description, image, sender=sender)
+    decentragram_posts.post(description, image, sender=sender)
 
     # getting and decoding that post
-    post = decentragram_post.tokenURI(0)
+    post = decentragram_posts.tokenURI(0)
     post = decode_json(post)
 
     assert post["image"] == image

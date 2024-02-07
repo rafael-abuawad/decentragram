@@ -9,12 +9,16 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
 /*                      STRUCTS                               */
 /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
-struct Post {
-    string description;
-    string imageURI;
+
+struct Profile {
+    string profileURI;
+    string name;
+    string handle;
+    string bio;
 }
 
-contract DecentragramPosts is ERC721, Owned {
+
+contract DecentragramProfiles is ERC721, Owned {
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
     /*                      CUSTOM ERRORS                         */
     /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
@@ -27,9 +31,7 @@ contract DecentragramPosts is ERC721, Owned {
     /*                      STORAGE                               */
     /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
 
-    mapping(uint256 id => mapping(address caller => bool hasLikedPost)) _hasLikedPost;
-    mapping(uint256 id => uint256 likes) private _likes;
-    mapping(uint256 id => Post post) private _posts;
+    mapping(uint256 id => Profile profile) private _profiles;
     uint256 private _ids = 1;
 
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
@@ -42,10 +44,10 @@ contract DecentragramPosts is ERC721, Owned {
     /*                      EXTERNAL METHODS                      */
     /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
 
-    function mint(Post memory post) external returns (uint256) {
+    function mint(Profile memory profile) external onlyOwner returns (uint256) {
         uint256 id = _ids;
         _mint(msg.sender, id);
-        _posts[id] = post;
+        _profiles[id] = profile;
         _ids += 1;
         return id;
     }
@@ -57,25 +59,7 @@ contract DecentragramPosts is ERC721, Owned {
         _burn(id);
         return true;
     }
-
-    function like(uint256 id) external {
-        if (!_hasLikedPost[id][msg.sender]) {
-            revert InstagramPost__HasAlreadyLikedPost();
-        }
-
-        _hasLikedPost[id][msg.sender] = true;
-        _likes[id] += 1;
-    }
-
-    function dislike(uint256 id) external {
-        if (_hasLikedPost[id][msg.sender]) {
-            revert InstagramPost__HasNotLikedPost();
-        }
-
-        _hasLikedPost[id][msg.sender] = false;
-        _likes[id] -= 1;
-    }
-
+    
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
     /*                      PUBLIC VIEW METHODS                   */
     /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
@@ -87,9 +71,9 @@ contract DecentragramPosts is ERC721, Owned {
     function totalSupply() public view returns (uint256) {
         return _ids;
     }
-
+    
     /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/
-    /*                      INTERNAL VIEW METHODS                 */
+    /*                      PUBLIC VIEW METHODS                   */
     /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/
 
     function _tokenURI(uint256 id) internal view returns (string memory) {
@@ -99,8 +83,8 @@ contract DecentragramPosts is ERC721, Owned {
                 Base64.encode(
                     abi.encodePacked(
                         "{",
-                            '"image":"', _posts[id].imageURI, '",',
-                            '"description":"', _posts[id].description, '",',
+                            '"image":"', _profiles[id].profileURI, '",',
+                            '"description":"', _profiles[id].bio, '",',
                             '"attributes": ', _tokenAttributes(id),
                         "}"
                     )
@@ -110,12 +94,13 @@ contract DecentragramPosts is ERC721, Owned {
     }
 
     function _tokenAttributes(uint256 id) internal view returns (string memory) {
-        string memory likes = Strings.toString(_likes[id]);
         return string(
             abi.encodePacked(
                 "[",
-                    '{"trait_type":"likes","value":', likes, "},",
-                    '{"trait_type":"description","value":"', _posts[id].description, '"}',
+                    '{"trait_type":"name","value":"', _profiles[id].name, '"},',
+                    '{"trait_type":"handle","value":"@', _profiles[id].handle, '"},',
+                    '{"trait_type":"profile_uri","value":"', _profiles[id].profileURI, '"},',
+                    '{"trait_type":"bio","value":"', _profiles[id].bio, '"}',
                 "]"
             )
         );
